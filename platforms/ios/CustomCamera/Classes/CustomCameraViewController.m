@@ -23,6 +23,12 @@
     UIImageView *_topRightGuide;
     UIImageView *_bottomLeftGuide;
     UIImageView *_bottomRightGuide;
+    
+    UITextView *_topTextGuide;
+    
+    NSString *_topText;
+    NSString *_bottomText;
+    
     UIActivityIndicatorView *_activityIndicator;
 }
 
@@ -48,12 +54,14 @@ static const CGFloat kCaptureButtonVerticalInsetTablet = 20;
 
 static const CGFloat kAspectRatio = 125.0f / 86;
 
-- (id)initWithCallback:(void(^)(UIImage*))callback {
+- (id)initWithCallback:(void(^)(UIImage*))callback topText:(NSString*)topText bottomText:(NSString*)bottomText{
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _callback = callback;
         _captureSession = [[AVCaptureSession alloc] init];
         _captureSession.sessionPreset = AVCaptureSessionPresetPhoto;
+        _topText = topText;
+        _bottomText = bottomText;
     }
     return self;
 }
@@ -110,6 +118,10 @@ static const CGFloat kAspectRatio = 125.0f / 86;
     
     _bottomRightGuide = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"www/img/cameraoverlay/border_bottom_right.png"]];
     [overlay addSubview:_bottomRightGuide];
+    
+    _topTextGuide = [[UITextView alloc] init];
+    _topTextGuide.text = [NSString stringWithFormat:@"%@ %@", _topText, _bottomText];
+    [overlay addSubview:_topTextGuide];
 
     return overlay;
 }
@@ -174,6 +186,13 @@ static const CGFloat kAspectRatio = 125.0f / 86;
                                          CGRectGetMinY(_topRightGuide.frame) + height - kBorderImageHeightPhone,
                                          kBorderImageWidthPhone,
                                          kBorderImageHeightPhone);
+    
+    
+    _topTextGuide.frame = CGRectMake(horizontalInset + 100,
+                                         verticalInset,
+                                     kBorderImageWidthPhone,
+                                     kBorderImageHeightPhone);
+    
 }
 
 - (void)layoutForPhoneWithTallScreen {
@@ -196,6 +215,12 @@ static const CGFloat kAspectRatio = 125.0f / 86;
                                          CGRectGetMinY(_topRightGuide.frame) + height - kBorderImageHeightPhone,
                                          kBorderImageWidthPhone,
                                          kBorderImageHeightPhone);
+    
+    _topTextGuide.frame = CGRectMake(kHorizontalInsetPhone + 50,
+                                     kVerticalInsetPhone,
+                                     kBorderImageWidthPhone,
+                                     kBorderImageHeightPhone);
+
 }
 
 - (void)layoutForTablet {
@@ -234,6 +259,11 @@ static const CGFloat kAspectRatio = 125.0f / 86;
                                          CGRectGetMinY(_topRightGuide.frame) + height - kBorderImageHeightTablet,
                                          kBorderImageWidthTablet,
                                          kBorderImageHeightTablet);
+
+    _topTextGuide.frame = CGRectMake(kHorizontalInsetTablet + 50,
+                                     kVerticalInsetTablet,
+                                     kBorderImageWidthTablet,
+                                     kBorderImageHeightTablet);
 }
 
 - (void)viewDidLoad {

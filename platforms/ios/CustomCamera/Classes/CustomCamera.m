@@ -16,6 +16,8 @@
     CGFloat quality = [[command argumentAtIndex:1] floatValue];
     CGFloat targetWidth = [[command argumentAtIndex:2] floatValue];
     CGFloat targetHeight = [[command argumentAtIndex:3] floatValue];
+    NSString *topText = [command argumentAtIndex:4];
+    NSString *bottomText = [command argumentAtIndex:5];
     if (![UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) {
         CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No rear camera detected"];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -33,7 +35,7 @@
                                                         messageAsString:[[NSURL fileURLWithPath:imagePath] absoluteString]];
             [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
             [self.viewController dismissViewControllerAnimated:YES completion:nil];
-        }];
+        } topText:topText bottomText:bottomText];
         [self.viewController presentViewController:cameraViewController animated:YES completion:nil];
     }
 }
