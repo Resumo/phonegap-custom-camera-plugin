@@ -24,7 +24,7 @@
     UIImageView *_bottomLeftGuide;
     UIImageView *_bottomRightGuide;
     
-    UITextView *_topTextGuide;
+    UILabel *_topTextLabel;
     
     NSString *_topText;
     NSString *_bottomText;
@@ -119,10 +119,14 @@ static const CGFloat kAspectRatio = 125.0f / 86;
     _bottomRightGuide = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"www/img/cameraoverlay/border_bottom_right.png"]];
     [overlay addSubview:_bottomRightGuide];
     
-    _topTextGuide = [[UITextView alloc] init];
-    _topTextGuide.text = [NSString stringWithFormat:@"%@ %@", _topText, _bottomText];
-    [overlay addSubview:_topTextGuide];
-
+    _topTextLabel = [[UILabel alloc] init];
+//    _topTextLabel.text = [NSString stringWithFormat:@"%@ %@", _topText, _bottomText];
+    _topTextLabel.text = _topText;
+    _topTextLabel.textColor = [UIColor whiteColor];
+    _topTextLabel.backgroundColor = [UIColor colorWithRed:0. green:0. blue:0. alpha:0.6];
+    _topTextLabel.textAlignment = NSTextAlignmentCenter;
+    [overlay addSubview:_topTextLabel];
+    
     return overlay;
 }
 
@@ -187,12 +191,11 @@ static const CGFloat kAspectRatio = 125.0f / 86;
                                          kBorderImageWidthPhone,
                                          kBorderImageHeightPhone);
     
-    
-    _topTextGuide.frame = CGRectMake(horizontalInset + 100,
-                                         verticalInset,
-                                     kBorderImageWidthPhone,
-                                     kBorderImageHeightPhone);
-    
+    _topTextLabel.frame = CGRectMake(horizontalInset,
+                                     verticalInset,
+                                     width,
+                                     50);
+
 }
 
 - (void)layoutForPhoneWithTallScreen {
@@ -216,11 +219,10 @@ static const CGFloat kAspectRatio = 125.0f / 86;
                                          kBorderImageWidthPhone,
                                          kBorderImageHeightPhone);
     
-    _topTextGuide.frame = CGRectMake(kHorizontalInsetPhone + 50,
-                                     kVerticalInsetPhone,
-                                     kBorderImageWidthPhone,
-                                     kBorderImageHeightPhone);
-
+    _topTextLabel.frame = CGRectMake(0,
+                                     0,
+                                     bounds.size.width,
+                                     50);
 }
 
 - (void)layoutForTablet {
@@ -260,10 +262,10 @@ static const CGFloat kAspectRatio = 125.0f / 86;
                                          kBorderImageWidthTablet,
                                          kBorderImageHeightTablet);
 
-    _topTextGuide.frame = CGRectMake(kHorizontalInsetTablet + 50,
+    _topTextLabel.frame = CGRectMake(kHorizontalInsetTablet,
                                      kVerticalInsetTablet,
-                                     kBorderImageWidthTablet,
-                                     kBorderImageHeightTablet);
+                                     bounds.size.width,
+                                     50);
 }
 
 - (void)viewDidLoad {
