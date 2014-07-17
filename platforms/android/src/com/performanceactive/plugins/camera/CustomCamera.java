@@ -17,6 +17,8 @@ import static com.performanceactive.plugins.camera.CustomCameraActivity.QUALITY;
 import static com.performanceactive.plugins.camera.CustomCameraActivity.RESULT_ERROR;
 import static com.performanceactive.plugins.camera.CustomCameraActivity.TARGET_HEIGHT;
 import static com.performanceactive.plugins.camera.CustomCameraActivity.TARGET_WIDTH;
+import static com.performanceactive.plugins.camera.CustomCameraActivity.TOP_TEXT;
+import static com.performanceactive.plugins.camera.CustomCameraActivity.BOTTOM_TEXT;
 
 
 public class CustomCamera extends CordovaPlugin {
@@ -25,8 +27,10 @@ public class CustomCamera extends CordovaPlugin {
 
 	@Override
     public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-	    if (!hasRearFacingCamera()) {
-	        callbackContext.error("No rear camera detected");
+//	    if (!hasRearFacingCamera()) {
+		if (!hasAnyCamera()) {		    
+//	        callbackContext.error("No rear camera detected");
+	        callbackContext.error("No camera detected");
 	        return false;
 	    }
 	    this.callbackContext = callbackContext;
@@ -36,13 +40,17 @@ public class CustomCamera extends CordovaPlugin {
 	    intent.putExtra(QUALITY, args.getInt(1));
 	    intent.putExtra(TARGET_WIDTH, args.getInt(2));
 	    intent.putExtra(TARGET_HEIGHT, args.getInt(3));
+	    intent.putExtra(TOP_TEXT, args.getString(4));
+	    intent.putExtra(BOTTOM_TEXT, args.getString(5));
 	    cordova.startActivityForResult(this, intent, 0);
         return true;
     }
 
-	private boolean hasRearFacingCamera() {
-	    Context context = cordova.getActivity().getApplicationContext();
-	    return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+//	private boolean hasRearFacingCamera() {
+	private boolean hasAnyCamera() {
+		Context context = cordova.getActivity().getApplicationContext();
+//	    return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+	    return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
 	}
 
 	@Override

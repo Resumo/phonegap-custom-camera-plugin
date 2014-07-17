@@ -1,7 +1,10 @@
 
 package com.performanceactive.plugins.camera;
 
+import android.R;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -18,6 +21,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -28,6 +32,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,10 +43,13 @@ import static android.hardware.Camera.Parameters.FLASH_MODE_OFF;
 import static android.hardware.Camera.Parameters.FOCUS_MODE_AUTO;
 import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
 
-public class CustomCameraActivity extends Activity {
+@SuppressLint("NewApi") public class CustomCameraActivity extends Activity {
 
     private static final String TAG = CustomCameraActivity.class.getSimpleName();
     private static final float ASPECT_RATIO = 126.0f / 86;
+
+    public static String TOP_TEXT = "TopText";
+    public static String BOTTOM_TEXT = "BottomText";
 
     public static String FILENAME = "Filename";
     public static String QUALITY = "Quality";
@@ -59,17 +67,36 @@ public class CustomCameraActivity extends Activity {
     private ImageView borderBottomLeft;
     private ImageView borderBottomRight;
     private ImageButton captureButton;
+    private ImageButton newCaptureButton;
 
     @Override
     protected void onResume() {
         super.onResume();
         try {
-            camera = Camera.open();
-            configureCamera();
+            if (Camera.getNumberOfCameras() > 1) {
+                camera = Camera.open(1);
+            }
+            else {
+                camera = Camera.open(0);
+            }           
+//            configureCamera();
             displayCameraPreview();
         } catch (Exception e) {
             finishWithError("Camera is not accessible");
         }
+    }
+    
+    private boolean hasRearCamera() {       
+        return hasCamera(PackageManager.FEATURE_CAMERA_FRONT);
+    }
+
+    private boolean hasFrontCamera() {      
+        return hasCamera(PackageManager.FEATURE_CAMERA);
+    }
+    
+    private boolean hasCamera(String featureKey) {
+        Context context = this.getApplicationContext();
+        return context.getPackageManager().hasSystemFeature(featureKey);        
     }
 
     private void configureCamera() {
@@ -118,6 +145,7 @@ public class CustomCameraActivity extends Activity {
         createBottomRightBorder();
         layoutBottomBorderImagesRespectingAspectRatio();
         createCaptureButton();
+        createTopText();
         setContentView(layout);
     }
 
@@ -226,7 +254,7 @@ public class CustomCameraActivity extends Activity {
         return size.y;
     }
 
-    private void createCaptureButton() {
+    private void createCaptureButton() {        
         captureButton = new ImageButton(getApplicationContext());
         setBitmap(captureButton, "capture_button.png");
         captureButton.setBackgroundColor(Color.TRANSPARENT);
@@ -251,12 +279,87 @@ public class CustomCameraActivity extends Activity {
         });
         layout.addView(captureButton);
     }
+    
+    private void createTopText() {
+        String topText = getIntent().getStringExtra(TOP_TEXT);
+        String bottomText = getIntent().getStringExtra(BOTTOM_TEXT);        
+        TextView textView = new TextView(getApplicationContext());
+        
+//        setBitmap(newCaptureButton, "capture_button.png");
+        textView.setText(topText + " " + bottomText);
+        textView.setTextSize(30);
+//      textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        textView.setGravity(Gravity.CENTER);
+        textView.setBackgroundResource(R.color.black);
+        textView.getBackground().setAlpha(170);
+        textView.setPadding(20, 20, 20, 20);
+//      textView.setGravity(Gravity.CENTER_VERTICAL);
+//        newCaptureButton.setBackgroundColor(Color.TRANSPARENT);
+//        newCaptureButton.setScaleType(ScaleType.FIT_CENTER);
+//      RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(dpToPixels(75), dpToPixels(75));
+//      RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, dpToPixels(200));        
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, dpToPixels(75));
+        
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//        layoutParams.bottomMargin = dpToPixels(10);
+        textView.setLayoutParams(layoutParams);
+//        newCaptureButton.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                setNewCaptureButtonImageForEvent(event);
+//                return false;
+//            }
+//        });
+//        newCaptureButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                takePictureWithAutoFocus();
+//            }
+//        });
+        
+        layout.addView(textView);
+        
+        
+//
+//      newCaptureButton = new TextView(getApplicationContext());
+//        setBitmap(newCaptureButton, "capture_button.png");
+//        newCaptureButton.setBackgroundColor(Color.TRANSPARENT);
+//        newCaptureButton.setScaleType(ScaleType.FIT_CENTER);
+//        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(dpToPixels(75), dpToPixels(75));
+//        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//        layoutParams.bottomMargin = dpToPixels(10);
+//        newCaptureButton.setLayoutParams(layoutParams);
+//        newCaptureButton.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                setNewCaptureButtonImageForEvent(event);
+//                return false;
+//            }
+//        });
+//        newCaptureButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                takePictureWithAutoFocus();
+//            }
+//        });
+//        layout.addView(newCaptureButton);
+    }
 
     private void setCaptureButtonImageForEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             setBitmap(captureButton, "capture_button_pressed.png");
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             setBitmap(captureButton, "capture_button.png");
+        }
+    }
+
+    private void setNewCaptureButtonImageForEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            setBitmap(newCaptureButton, "capture_button_pressed.png");
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            setBitmap(newCaptureButton, "capture_button.png");
         }
     }
 
@@ -361,6 +464,7 @@ public class CustomCameraActivity extends Activity {
     }
 
     private void finishWithError(String message) {
+        releaseCamera();
         Intent data = new Intent().putExtra(ERROR_MESSAGE, message);
         setResult(RESULT_ERROR, data);
         finish();
